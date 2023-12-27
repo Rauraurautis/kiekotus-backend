@@ -1,0 +1,48 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1700697537164,
+      "tag": "0000_curved_union_jack",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1700698152199,
+      "tag": "0001_outstanding_sway",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1700698296908,
+      "tag": "0002_eminent_maelstrom",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1700699148509,
+      "tag": "0003_clean_shocker",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1700699314660,
+      "tag": "0004_overjoyed_red_shift",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1700943731440,
+      "tag": "0005_yellow_blizzard",
+      "breakpoints": true
+    }
+  ]
+}

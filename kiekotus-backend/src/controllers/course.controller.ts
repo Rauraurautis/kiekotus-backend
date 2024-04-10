@@ -35,7 +35,6 @@ export const postCourseHandler = async (req: Request, res: Response, next: NextF
 
 export const postHoleHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log(Number(req.params.id))
         const newHole = await addHole(req.body, Number(req.params.id))
         return res.status(200).send(newHole)
     } catch (error) {

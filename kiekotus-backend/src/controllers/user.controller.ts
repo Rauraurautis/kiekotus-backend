@@ -3,8 +3,8 @@ import logger from "../lib/utils/logger"
 import { addCourse, getAllCourses, getSingleCourse } from "../services/course.service"
 import { omit } from "lodash"
 import {
-    acceptFriendRequest, addFriend, addNonregisteredPlayer,
-    addUser, getAllFriendRequests, getAllFriends, getAllNonregisteredPlayers, getAllUsers, getSingleUser, rejectFriendRequest
+    acceptFriendRequest, addFriend, 
+    addUser, getAllFriendRequests, getAllFriends, getAllUsers, getSingleUser, rejectFriendRequest
 } from "../services/user.service"
 
 export const getSingleUserHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -92,7 +92,7 @@ export const getAllFriendsHandler = async (req: Request, res: Response, next: Ne
     }
 }
 
-// Nonregistered players
+/* Nonregistered players
 
 export const postNonRegisteredPlayerHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -112,5 +112,5 @@ export const getAllNonRegisteredPlayersHandler = async (req: Request, res: Respo
         logger.error(error)
         next(error)
     }
-}
+} */
 

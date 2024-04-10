@@ -5,18 +5,23 @@ import { CourseType, HoleType } from "../lib/zod/schemas/course.schema"
 
 export const getSingleCourse = async (id: number) => {
     const course = await db.query.courses.findFirst({
-        where: eq(courses.id, id), columns: { id: true }, with: { holes: true }
+        where: eq(courses.id, id), with: { holes: { columns: { distance: true, par: true } } }
     })
 
     return course ? course : "No course found with that id"
 }
 
 export const getAllCourses = async () => {
-    return await db.query.courses.findMany({})
+    return await db.query.courses.findMany()
 }
 
 export const addCourse = async (input: CourseType) => {
     const course = await db.insert(courses).values(input).returning()
+    if (input.holes) {
+        for (let hole of input.holes) {
+            await addHole(hole, course[0].id)
+        }
+    }
     return course[0]
 }
 

@@ -1,6 +1,6 @@
 import { and, eq, or } from "drizzle-orm";
 import { db } from "../lib/drizzle";
-import { friendships, nonregisteredPlayers, statistics, users } from "../lib/drizzle/schema";
+import { friendships, statistics, users } from "../lib/drizzle/schema";
 import { NonregisteredPlayerType, UserType } from "../lib/zod/schemas/user.schema";
 import bcrypt from "bcrypt"
 import { signJWT } from "../lib/utils/jwt.utils";
@@ -83,10 +83,6 @@ export const addFriend = async (id: number, friendId: number) => {
         where: eq(users.id, friendId)
     })
 
-
-
-    console.log(user, friend)
-
     if (user && friend && !checkIfAlreadyExists) {
         const friendship = await db.insert(friendships).values({ firstUser: user.id, secondUser: friend.id, status: false }).returning()
         return friendship[0]
@@ -152,7 +148,7 @@ export const getAllFriends = async (userId: number) => {
 }
 
 // Nonregistered players
-
+/*
 export const addNonregisteredPlayer = async (player: NonregisteredPlayerType, id: number) => {
     const newNonregisteredPlayer = await db.insert(nonregisteredPlayers).values({ name: player.name, userId: id }).returning()
     return newNonregisteredPlayer
@@ -164,4 +160,4 @@ export const getAllNonregisteredPlayers = async (id: number) => {
     })
 
     return allNonregisteredPlayers
-}
+} */

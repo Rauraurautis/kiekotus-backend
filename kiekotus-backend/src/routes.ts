@@ -3,10 +3,9 @@ import { getAllCoursesHandler, getSingleCourseHandler, postCourseHandler, postHo
 
 import { createCourseSchema, createHoleSchema } from "./lib/zod/schemas/course.schema"
 import { validateBody, validateParams } from "./middleware/validateResource"
-import { createNonregisteredPlayerSchema, createUserSchema, findIdSchema } from "./lib/zod/schemas/user.schema"
+import { createUserSchema, findIdSchema } from "./lib/zod/schemas/user.schema"
 import {
-    acceptFriendRequestHandler, addFriendHandler, getAllFriendsHandler, getAllNonRegisteredPlayersHandler, getAllUsersHandler,
-    postNonRegisteredPlayerHandler,
+    acceptFriendRequestHandler, addFriendHandler, getAllFriendRequestsHandler, getAllFriendsHandler, getAllUsersHandler,
     postUserHandler, rejectFriendRequestHandler
 } from "./controllers/user.controller"
 import { createSessionSchema } from "./lib/zod/schemas/session.schema"
@@ -16,10 +15,14 @@ import { getUserStatisticsHandler, postNewPlayedCourseHandler } from "./controll
 import { addPlayedCourseSchema } from "./lib/zod/schemas/statistics.schema"
 import { getRoundsHandler, postRoundHandler } from "./controllers/round.controller"
 import { createRoundSchema } from "./lib/zod/schemas/round.schema"
+import logger from "./lib/utils/logger"
+import { parseStringified } from "./middleware/parseStringfied"
+import { handleTokenRefresh } from "./lib/handleTokenRefresh"
 
 const routes = (app: Express) => {
 
     app.get("/healthcheck", (req: Request, res: Response) => {
+        logger.info("Health checked")
         return res.json({ status: "OK" })
     })
 
@@ -27,13 +30,15 @@ const routes = (app: Express) => {
         return res.json({ csrfToken: req.csrfToken() })
     })
 
+    app.get("/refresh", handleTokenRefresh)
+
     // Sessions
     app.post("/api/sessions", validateBody(createSessionSchema), postUserSessionHandler)
 
     // Courses
     app.get("/api/courses/:id", validateParams(findIdSchema), getSingleCourseHandler)
     app.get("/api/courses", getAllCoursesHandler)
-    app.post("/api/courses", validateBody(createCourseSchema), postCourseHandler)
+    app.post("/api/courses", requireUser, parseStringified, validateBody(createCourseSchema), postCourseHandler)
     app.delete("/api/courses/:id") //TODO
 
     // Holes
@@ -41,29 +46,32 @@ const routes = (app: Express) => {
     app.put("/api/courses/:id/:holeId", requireUser, validateParams(findIdSchema), validateBody(createHoleSchema), postHoleHandler) // TODO
 
     // Rounds
-    app.get("/api/rounds", requireUser, getRoundsHandler)
+    /* app.get("/api/rounds/", getallRoundsHandler) */ // TODO
+    app.get("/api/rounds/:userId", requireUser, getRoundsHandler) // Korjaa Id:llä haku
+    app.delete("/api/rounds/:id", requireUser, getRoundsHandler) // TODO
     app.post("/api/rounds", requireUser, validateBody(createRoundSchema), postRoundHandler)
 
     // Users
-    app.get("/api/users/:id", validateParams(findIdSchema), getAllUsersHandler)
     app.get("/api/users", getAllUsersHandler)
     app.post("/api/users", validateBody(createUserSchema), postUserHandler)
+    app.put("/api/users/:id") //TODO
     app.delete("/api/users/:id") //TODO
+    app.get("/api/users/:id", validateParams(findIdSchema), getAllUsersHandler) // TODO
 
     // Statistics
-    app.get("/api/statistics", requireUser, getUserStatisticsHandler)
     app.post("/api/statistics/played-courses", requireUser, validateBody(addPlayedCourseSchema), postNewPlayedCourseHandler)
-
+    /* GET	/api/users/:id/played-courses	Tietyn pelaajan pelattujen ratojen haku käyttäjäid:llä
+   POST	/api/users/:id/played-courses	Pelatun radan lisäys tietylle pelaajalle käyttäjäid:llä
+   DELETE	/api/users/:id/played-courses/:courseId	Pelatun radan poistaminen pelatuista radoista id:llä
+    */
     // Nonregistered friends
-    app.get("/api/nonregistered-friends", requireUser, getAllNonRegisteredPlayersHandler)
-    app.post("/api/nonregistered-friends", requireUser, validateBody(createNonregisteredPlayerSchema), postNonRegisteredPlayerHandler)
+
 
     // Friendships 
-    app.post("/api/friend-requests/:id", requireUser, validateParams(findIdSchema), addFriendHandler)
-    app.put("/api/friend-requests/:id/accept", requireUser, validateParams(findIdSchema), acceptFriendRequestHandler)
-    app.put("/api/friend-requests/:id/reject", requireUser, validateParams(findIdSchema), rejectFriendRequestHandler)
-    app.get("/api/friend-requests", requireUser, getAllFriendsHandler) // User's friend requests
-    app.get("/api/friendships", requireUser, getAllFriendsHandler)
+    app.post("/api/:userId/friend-requests", requireUser, validateParams(findIdSchema), addFriendHandler)
+    app.put("/api/:userId/friend-requests/:id", requireUser, validateParams(findIdSchema), /* handleFriendRequestHandler */)
+    app.get("/api/:userId/friend-requests", requireUser, getAllFriendRequestsHandler) // User's friend requests
+    app.get("/api/:userId/friendships", requireUser, getAllFriendsHandler)
 }
 
 export default routes

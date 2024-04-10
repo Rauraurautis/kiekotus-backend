@@ -1,6 +1,8 @@
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import config from "config"
 import { DatabaseUser, TokenPayload } from "../types"
+import { get } from "lodash"
+import { getSingleUser } from "../../services/user.service"
 
 const privateKey = config.get<string>("privateKey")
 const publicKey = config.get<string>("publicKey")
@@ -25,4 +27,21 @@ export const verifyJwt = (token: string) => {
         }
     }
 
-} 
+}
+
+export const reIssueAccessToken = async (refreshToken: string) => {
+    const { decoded } = verifyJwt(refreshToken) as JwtPayload
+    const userId = get(decoded?.user, "id")
+
+    if (!decoded || !userId) {
+        return false
+    }
+
+    let user = await getSingleUser(Number(decoded.user.id))
+
+    if (!user) return false
+
+    const accessTokenTtl = "15m"
+    const accessToken = signJWT({ user: { email: user.email, name: user.username, _id: user.id } }, { expiresIn: accessTokenTtl })
+    return accessToken
+}

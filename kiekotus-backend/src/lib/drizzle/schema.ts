@@ -5,6 +5,7 @@ export const users = pgTable("users", {
     id: serial("id").primaryKey(),
     username: text("name").notNull().unique(),
     email: text("email").notNull().unique(),
+    role: text("role").notNull(),
     password: text("password"),
     profileImage: text("profile_image"),
     createdAt: date("createdAt").defaultNow(),
@@ -102,24 +103,6 @@ export const roundsRelations = relations(rounds, ({ many, one }) => ({
         references: [courses.id]
     })
 }))
-
-/*export const roundPlayers = pgTable("round_players", {
-    roundId: integer("round_id").notNull().references(() => rounds.id),
-    userId: integer("user_id").references(() => users.id),
-    score: integer("score").default(0)
-}, (t) => ({ pk: primaryKey({ columns: [t.roundId, t.userId] }) })) 
-
-
-export const roundPlayersRelations = relations(roundPlayers, ({ one }) => ({
-    round: one(rounds, {
-        fields: [roundPlayers.roundId],
-        references: [rounds.id]
-    }),
-    user: one(users, {
-        fields: [roundPlayers.userId],
-        references: [users.id]
-    }),
-})) */
 
 export const sessions = pgTable("sessions", {
     id: serial("id").primaryKey(),

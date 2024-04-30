@@ -7,12 +7,14 @@ import logger from "./lib/utils/logger"
 import { deserializeUser } from "./middleware/deserializeUser"
 import helmet from "helmet"
 
-const PORT = config.get("port")
+const PORT = process.env.PORT
 const app = express()
 
-app.use(helmet())
 app.use(cookieParser())
-app.use(cors({ exposedHeaders: ["x-access-token", "CSRF-Token"], origin: ["http://localhost:3000,", "80.220.95.201"], methods: ["POST", "PUT", "DELETE"], credentials: true }))
+app.use(cors({
+    origin: ["http://localhost:3000,", "80.220.95.201"],
+    methods: ["POST", "PUT", "DELETE", "GET"], credentials: true
+}))
 app.use(express.json())
 app.use(deserializeUser)
 

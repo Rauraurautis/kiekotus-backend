@@ -1,5 +1,5 @@
 import { Express, Request, Response } from "express"
-import { getAllCoursesHandler, getSingleCourseHandler, postCourseHandler, postHoleHandler } from "./controllers/course.controller"
+import { deleteCourseHandler, getAllCoursesHandler, getSingleCourseHandler, postCourseHandler, postHoleHandler } from "./controllers/course.controller"
 
 import { createCourseSchema, createHoleSchema } from "./lib/zod/schemas/course.schema"
 import { validateBody, validateParams } from "./middleware/validateResource"
@@ -9,15 +9,16 @@ import {
     postUserHandler, rejectFriendRequestHandler
 } from "./controllers/user.controller"
 import { createSessionSchema } from "./lib/zod/schemas/session.schema"
-import { postUserSessionHandler } from "./controllers/session.controller"
+import { loginHandler } from "./controllers/session.controller"
 import { requireUser } from "./middleware/requireUser"
-import { getUserStatisticsHandler, postNewPlayedCourseHandler } from "./controllers/statistics.controller"
+import { deletePlayedCourseHandler, getUserStatisticsHandler, postNewPlayedCourseHandler } from "./controllers/statistics.controller"
 import { addPlayedCourseSchema } from "./lib/zod/schemas/statistics.schema"
 import { getRoundsHandler, postRoundHandler } from "./controllers/round.controller"
 import { createRoundSchema } from "./lib/zod/schemas/round.schema"
 import logger from "./lib/utils/logger"
 import { parseStringified } from "./middleware/parseStringfied"
 import { handleTokenRefresh } from "./lib/handleTokenRefresh"
+import { requireAdmin } from "./middleware/requireAdmin"
 
 const routes = (app: Express) => {
 
@@ -32,14 +33,14 @@ const routes = (app: Express) => {
 
     app.get("/refresh", handleTokenRefresh)
 
-    // Sessions
-    app.post("/api/sessions", validateBody(createSessionSchema), postUserSessionHandler)
+
+    app.post("/api/login", validateBody(createSessionSchema), loginHandler)
 
     // Courses
     app.get("/api/courses/:id", validateParams(findIdSchema), getSingleCourseHandler)
     app.get("/api/courses", getAllCoursesHandler)
-    app.post("/api/courses", requireUser, parseStringified, validateBody(createCourseSchema), postCourseHandler)
-    app.delete("/api/courses/:id") //TODO
+    app.post("/api/courses", requireAdmin, parseStringified, validateBody(createCourseSchema), postCourseHandler)
+    app.delete("/api/courses/:id", requireAdmin, deleteCourseHandler)
 
     // Holes
     app.post("/api/courses/:id", requireUser, validateParams(findIdSchema), validateBody(createHoleSchema), postHoleHandler)
@@ -55,15 +56,13 @@ const routes = (app: Express) => {
     app.get("/api/users", getAllUsersHandler)
     app.post("/api/users", validateBody(createUserSchema), postUserHandler)
     app.put("/api/users/:id") //TODO
-    app.delete("/api/users/:id") //TODO
+    app.delete("/api/users/:id", requireAdmin) //TODO
     app.get("/api/users/:id", validateParams(findIdSchema), getAllUsersHandler) // TODO
 
     // Statistics
-    app.post("/api/statistics/played-courses", requireUser, validateBody(addPlayedCourseSchema), postNewPlayedCourseHandler)
-    /* GET	/api/users/:id/played-courses	Tietyn pelaajan pelattujen ratojen haku käyttäjäid:llä
-   POST	/api/users/:id/played-courses	Pelatun radan lisäys tietylle pelaajalle käyttäjäid:llä
-   DELETE	/api/users/:id/played-courses/:courseId	Pelatun radan poistaminen pelatuista radoista id:llä
-    */
+    app.get("/api/users/:id/statistics", getUserStatisticsHandler)
+    app.post("/api/users/:id/statistics/played-courses", requireUser, validateBody(addPlayedCourseSchema), postNewPlayedCourseHandler)
+    app.delete("/api/users/:id/statistics/played-courses/:courseId", requireUser, deletePlayedCourseHandler)
     // Nonregistered friends
 
 
@@ -73,5 +72,7 @@ const routes = (app: Express) => {
     app.get("/api/:userId/friend-requests", requireUser, getAllFriendRequestsHandler) // User's friend requests
     app.get("/api/:userId/friendships", requireUser, getAllFriendsHandler)
 }
+
+
 
 export default routes

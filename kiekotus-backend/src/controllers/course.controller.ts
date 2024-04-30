@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import logger from "../lib/utils/logger"
-import { addCourse, addHole, getAllCourses, getSingleCourse } from "../services/course.service"
+import { addCourse, addHole, deleteCourse, getAllCourses, getSingleCourse } from "../models/course.model"
 
 export const getSingleCourseHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -27,6 +27,16 @@ export const postCourseHandler = async (req: Request, res: Response, next: NextF
     try {
         const newCourse = await addCourse(req.body)
         return res.status(200).send(newCourse)
+    } catch (error) {
+        logger.error(error)
+        next(error)
+    }
+}
+
+export const deleteCourseHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const deletedCourse = await deleteCourse(req.params.id)
+        return res.status(200).send(deletedCourse)
     } catch (error) {
         logger.error(error)
         next(error)

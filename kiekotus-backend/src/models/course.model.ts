@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
 import { db } from "../lib/drizzle"
-import { courses, holes } from "../lib/drizzle/schema"
+import { courses, holes, users } from "../lib/drizzle/schema"
 import { CourseType, HoleType } from "../lib/zod/schemas/course.schema"
 
 export const getSingleCourse = async (id: number) => {
@@ -22,6 +22,11 @@ export const addCourse = async (input: CourseType) => {
             await addHole(hole, course[0].id)
         }
     }
+    return course[0]
+}
+
+export const deleteCourse = async (id: string) => {
+    const course = await db.delete(courses).where((eq(courses.id, Number(id)))).returning()
     return course[0]
 }
 

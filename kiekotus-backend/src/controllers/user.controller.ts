@@ -1,15 +1,11 @@
 import { NextFunction, Request, Response } from "express"
 import logger from "../lib/utils/logger"
-import { addCourse, getAllCourses, getSingleCourse } from "../services/course.service"
-import { omit } from "lodash"
-import {
-    acceptFriendRequest, addFriend, 
-    addUser, getAllFriendRequests, getAllFriends, getAllUsers, getSingleUser, rejectFriendRequest
-} from "../services/user.service"
+import { addFriend, acceptFriendRequest, rejectFriendRequest, getAllFriendRequests, getAllFriends } from "../models/friends.model"
+import { getSingleUser, getAllUsers, addUser } from "../models/user.service"
+
 
 export const getSingleUserHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log(req.params)
         const id = Number(req.params.id)
         const user = await getSingleUser(id)
         return res.status(200).send(user)
@@ -40,6 +36,26 @@ export const postUserHandler = async (req: Request, res: Response, next: NextFun
     }
 }
 
+export const editUserHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await editUser(req.params.id)
+        return res.status(200).send(user)
+    } catch (error) {
+        logger.error(error)
+        next(error)
+    }
+}
+
+export const deleteUserHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await deleteUser(req.params.id)
+        return res.status(200).send(user)
+    } catch (error) {
+        logger.error(error)
+        next(error)
+    }
+}
+
 // Friends
 
 export const addFriendHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -51,6 +67,17 @@ export const addFriendHandler = async (req: Request, res: Response, next: NextFu
         next(error)
     }
 }
+
+export const handleFriendRequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const friendship = await addFriend(res.locals.user.id, Number(req.params.id))
+        return res.status(200).send(friendship)
+    } catch (error) {
+        logger.error(error)
+        next(error)
+    }
+}
+
 
 export const acceptFriendRequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {

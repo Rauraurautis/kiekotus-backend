@@ -2,10 +2,10 @@ import jwt, { JwtPayload } from "jsonwebtoken"
 import config from "config"
 import { DatabaseUser, TokenPayload } from "../types"
 import { get } from "lodash"
-import { getSingleUser } from "../../services/user.service"
+import { getSingleUser } from "../../models/user.service"
 
-const privateKey = config.get<string>("privateKey")
-const publicKey = config.get<string>("publicKey")
+const privateKey = process.env.PRIVATE_KEY || ""
+const publicKey = process.env.PUBLIC_KEY || ""
 
 export const signJWT = (object: Object, options?: jwt.SignOptions | undefined) => {
     return jwt.sign(object, privateKey, { ...(options && options), algorithm: "RS256" })
@@ -41,7 +41,7 @@ export const reIssueAccessToken = async (refreshToken: string) => {
 
     if (!user) return false
 
-    const accessTokenTtl = "15m"
+    const accessTokenTtl = "1m"
     const accessToken = signJWT({ user: { email: user.email, name: user.username, _id: user.id } }, { expiresIn: accessTokenTtl })
     return accessToken
 }

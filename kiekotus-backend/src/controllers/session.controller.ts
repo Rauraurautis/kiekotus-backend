@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express"
 import logger from "../lib/utils/logger"
-import { createUserSession } from "../services/user.service"
+import { loginUser } from "../models/user.service"
 
 
-export const postUserSessionHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const loginHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const tokens = await createUserSession(req.body, req.get("user-agent") || "")
+        const tokens = await loginUser(req.body)
         return res.cookie("refreshToken", tokens.refreshToken, { httpOnly: true })
             .send({ accessToken: tokens.accessToken })
     } catch (error: any) {

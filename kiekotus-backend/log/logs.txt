@@ -26,3 +26,12 @@
 {"level":30,"time":"2024-04-24T22:29:37+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
 {"level":30,"time":"2024-04-27T16:28:25+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
 {"level":30,"time":"2024-04-28T23:55:39+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+{"level":30,"time":"2024-04-29T18:29:23+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+{"level":30,"time":"2024-05-07T02:21:58+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+[02:29:48.000] [32mINFO[39m: [36mListening to port 1337[39m
+    test: "info"
+{"level":30,"time":"2024-05-07T02:29:55+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+{"level":30,"time":"2024-05-07T02:30:08+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+{"level":30,"time":"2024-05-07T02:30:18+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+{"level":30,"time":"2024-05-07T02:30:23+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}
+{"level":30,"time":"2024-05-07T02:31:20+03:00","pid":false,"test":"info","msg":"Listening to port 1337"}

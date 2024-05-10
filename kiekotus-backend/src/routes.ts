@@ -48,9 +48,9 @@ const routes = (app: Express) => {
 
     // Rounds
     /* app.get("/api/rounds/", getallRoundsHandler) */ // TODO
-    app.get("/api/rounds/:userId", requireUser, getRoundsHandler) // Korjaa Id:llä haku
-    app.delete("/api/rounds/:id", requireUser, getRoundsHandler) // TODO
-    app.post("/api/rounds", requireUser, validateBody(createRoundSchema), postRoundHandler)
+    app.get("/api/users/:userId/rounds", requireUser, getRoundsHandler) // Korjaa Id:llä haku
+    app.delete("/api/users/:userId/rounds/:roundId", requireUser, getRoundsHandler) // TODO
+    app.post("/api/users/:userId/rounds", requireUser, validateBody(createRoundSchema), postRoundHandler)
 
     // Users
     app.get("/api/users", getAllUsersHandler)
@@ -67,10 +67,10 @@ const routes = (app: Express) => {
 
 
     // Friendships 
-    app.post("/api/:userId/friend-requests", requireUser, validateParams(findIdSchema), addFriendHandler)
-    app.put("/api/:userId/friend-requests/:id", requireUser, validateParams(findIdSchema), /* handleFriendRequestHandler */)
-    app.get("/api/:userId/friend-requests", requireUser, getAllFriendRequestsHandler) // User's friend requests
-    app.get("/api/:userId/friendships", requireUser, getAllFriendsHandler)
+    app.post("/api/users/:userId/friend-requests", requireUser, validateParams(findIdSchema), addFriendHandler)
+    app.put("/api/users/:userId/friend-requests/:id", requireUser, validateParams(findIdSchema), /* handleFriendRequestHandler */)
+    app.get("/api/users/:userId/friend-requests", requireUser, getAllFriendRequestsHandler) // User's friend requests
+    app.get("/api/users/:userId/friendships", requireUser, getAllFriendsHandler)
 }
 
 

@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import pino from "pino";
 import logger from "pino"
+import dotenv from "dotenv"
+dotenv.config()
 
 const transport = pino.transport({
     targets: [

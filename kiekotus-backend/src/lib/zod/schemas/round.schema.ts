@@ -1,10 +1,13 @@
 import { array, number, object, string, z, union } from "zod"
 
-
+const playerSchema = object({
+    name: string(),
+    id: union([z.string(), z.number()])
+})
 
 const roundPlayerSchema = object({
-    name: string(),
-    score: number({ required_error: "Enter score" })
+    player: playerSchema,
+    scores: array(number())
 })
 
 export const createRoundSchema = object({

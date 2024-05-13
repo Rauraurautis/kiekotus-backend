@@ -24,6 +24,9 @@ export const getAllRounds = async () => {
 }
 
 export const getRounds = async (userId: number) => {
-    const queriedRounds = await db.query.rounds.findMany({ where: eq(rounds.id, userId) })
+    const queriedRounds = await db.query.rounds.findMany({
+        where: eq(rounds.userId, userId),
+        with: { course: { columns: { name: true } } }
+    })
     return queriedRounds
 }

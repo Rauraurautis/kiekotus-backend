@@ -42,6 +42,6 @@ export const reIssueAccessToken = async (refreshToken: string) => {
     if (!user) return false
 
     const accessTokenTtl = "1m"
-    const accessToken = signJWT({ user: { email: user.email, name: user.username, _id: user.id } }, { expiresIn: accessTokenTtl })
+    const accessToken = signJWT({ user: { email: user.email, name: user.username, id: user.id } }, { expiresIn: accessTokenTtl })
     return accessToken
 }

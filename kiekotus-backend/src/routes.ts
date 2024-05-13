@@ -5,13 +5,14 @@ import { createCourseSchema, createHoleSchema } from "./lib/zod/schemas/course.s
 import { validateBody, validateParams } from "./middleware/validateResource"
 import { createUserSchema, findIdSchema } from "./lib/zod/schemas/user.schema"
 import {
-    acceptFriendRequestHandler, addFriendHandler, getAllFriendRequestsHandler, getAllFriendsHandler, getAllUsersHandler,
+    acceptFriendRequestHandler, addFriendHandler, deleteFriendShipHandler, getAllFriendRequestsHandler, getAllFriendsHandler, getAllUsersHandler,
+    handleFriendRequestHandler,
     postUserHandler, rejectFriendRequestHandler
 } from "./controllers/user.controller"
 import { createSessionSchema } from "./lib/zod/schemas/session.schema"
 import { loginHandler } from "./controllers/session.controller"
 import { requireUser } from "./middleware/requireUser"
-import { deletePlayedCourseHandler, getUserStatisticsHandler, postNewPlayedCourseHandler } from "./controllers/statistics.controller"
+import { getUserStatisticsHandler, postNewPlayedCourseHandler } from "./controllers/statistics.controller"
 import { addPlayedCourseSchema } from "./lib/zod/schemas/statistics.schema"
 import { getRoundsHandler, postRoundHandler } from "./controllers/round.controller"
 import { createRoundSchema } from "./lib/zod/schemas/round.schema"
@@ -62,15 +63,16 @@ const routes = (app: Express) => {
     // Statistics
     app.get("/api/users/:id/statistics", getUserStatisticsHandler)
     app.post("/api/users/:id/statistics/played-courses", requireUser, validateBody(addPlayedCourseSchema), postNewPlayedCourseHandler)
-    app.delete("/api/users/:id/statistics/played-courses/:courseId", requireUser, deletePlayedCourseHandler)
+    // app.delete("/api/users/:id/statistics/played-courses/:courseId", requireUser, deletePlayedCourseHandler)
     // Nonregistered friends
 
 
     // Friendships 
-    app.post("/api/users/:userId/friend-requests", requireUser, validateParams(findIdSchema), addFriendHandler)
-    app.put("/api/users/:userId/friend-requests/:id", requireUser, validateParams(findIdSchema), /* handleFriendRequestHandler */)
+    app.post("/api/users/:userId/friend-requests", requireUser, addFriendHandler)
+    app.put("/api/users/:userId/friend-requests", requireUser, handleFriendRequestHandler)
     app.get("/api/users/:userId/friend-requests", requireUser, getAllFriendRequestsHandler) // User's friend requests
     app.get("/api/users/:userId/friendships", requireUser, getAllFriendsHandler)
+    app.delete("/api/users/:userId/friendships", requireUser, deleteFriendShipHandler)
 }
 
 

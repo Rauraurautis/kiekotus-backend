@@ -7,7 +7,7 @@ export const handleTokenRefresh = async (req: Request, res: Response, next: Next
         const refreshToken = req.cookies["refreshToken"]
         
         const newAccessToken = await reIssueAccessToken(refreshToken)
-        console.log(newAccessToken)
+
         if (newAccessToken) {
             return res.status(200).send({ accessToken: newAccessToken })
         }

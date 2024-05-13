@@ -16,4 +16,4 @@ RUN ["npm", "run", "migration:generate"]
 
 EXPOSE 1337
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]

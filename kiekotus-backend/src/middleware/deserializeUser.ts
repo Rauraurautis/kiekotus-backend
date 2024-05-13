@@ -3,6 +3,8 @@ import { get } from "lodash"
 
 
 import { reIssueAccessToken, verifyJwt } from "../lib/utils/jwt.utils";
+import { TokenPayload } from "../lib/types";
+import { JwtPayload } from "jsonwebtoken";
 
 export const deserializeUser = async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = get(req, "headers.authorization")?.slice(7)
@@ -20,12 +22,12 @@ export const deserializeUser = async (req: Request, res: Response, next: NextFun
     }
 
     if (expired && refreshToken) {
-     
         const newAccessToken = await reIssueAccessToken(refreshToken)
         if (newAccessToken) {
             res.setHeader("x-access-token", newAccessToken)
             const result = verifyJwt(newAccessToken)
-            res.locals.user = result.decoded
+            const { user } = result.decoded as JwtPayload
+            res.locals.user = user
             return next()
         }
         return next()

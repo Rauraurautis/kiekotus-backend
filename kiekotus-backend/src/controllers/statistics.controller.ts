@@ -22,7 +22,7 @@ export const postNewPlayedCourseHandler = async (req: Request, res: Response, ne
     }
 }
 
-export const deletePlayedCourseHandler = async (req: Request, res: Response, next: NextFunction) => {
+/* export const deletePlayedCourseHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const stats = await deletePlayedCourse(res.locals.user.id, req.body)
         return res.status(200).send(stats)
@@ -30,4 +30,4 @@ export const deletePlayedCourseHandler = async (req: Request, res: Response, nex
         logger.error(error)
         next(error)
     }
-}
+} */

@@ -26,6 +26,17 @@ export const friendships = pgTable("friendships", {
     status: boolean("status").default(false)
 })
 
+export const friendshipsRelations = relations(friendships, ({ one }) => ({
+    firstUser: one(users, {
+        fields: [friendships.firstUser],
+        references: [users.id]
+    }),
+    secondUser: one(users, {
+        fields: [friendships.secondUser],
+        references: [users.id]
+    })
+}))
+
 
 export const statistics = pgTable("statistics", {
     id: serial("id").primaryKey(),

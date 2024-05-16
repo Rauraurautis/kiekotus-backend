@@ -1,10 +1,11 @@
 import { relations } from "drizzle-orm";
-import { pgTable, serial, text, varchar, boolean, integer, timestamp, date, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar, boolean, integer, timestamp, date, primaryKey, json } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
     username: text("name").notNull().unique(),
     email: text("email").notNull().unique(),
+    role: text("role").notNull(),
     password: text("password"),
     profileImage: text("profile_image"),
     createdAt: date("createdAt").defaultNow(),
@@ -12,8 +13,7 @@ export const users = pgTable("users", {
 })
 
 export const userRelations = relations(users, ({ many, one }) => ({
-    nonregisteredUsers: many(nonregisteredPlayers),
-    roundUsers: many(roundPlayers),
+    rounds: many(rounds),
     friendships: many(friendships),
     sessions: many(sessions),
     statistics: one(statistics)
@@ -25,6 +25,17 @@ export const friendships = pgTable("friendships", {
     secondUser: integer("second_user_id").notNull().references(() => users.id),
     status: boolean("status").default(false)
 })
+
+export const friendshipsRelations = relations(friendships, ({ one }) => ({
+    firstUser: one(users, {
+        fields: [friendships.firstUser],
+        references: [users.id]
+    }),
+    secondUser: one(users, {
+        fields: [friendships.secondUser],
+        references: [users.id]
+    })
+}))
 
 
 export const statistics = pgTable("statistics", {
@@ -56,17 +67,6 @@ export const statisticPlayedCourseRelations = relations(statisticPlayedCourses, 
         fields: [statisticPlayedCourses.courseId],
         references: [courses.id]
     })
-}))
-
-
-export const nonregisteredPlayers = pgTable("nonregistered_players", {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(),
-    userId: integer("user_id").notNull().references(() => users.id)
-})
-
-export const nonregisteredPlayerRelations = relations(nonregisteredPlayers, ({ many }) => ({
-    roundUsers: many(roundNonregisteredPlayers)
 }))
 
 export const courses = pgTable("courses", {
@@ -102,53 +102,18 @@ export const holeRelations = relations(holes, ({ one }) => ({
 
 export const rounds = pgTable("rounds", {
     id: serial("id").primaryKey(),
+    userId: integer("user_id").notNull().references(() => users.id),
     courseId: integer("course_id"),
+    roundPlayers: varchar("roundPlayers"),
     createdAt: date("createdAt").defaultNow()
 })
 
 export const roundsRelations = relations(rounds, ({ many, one }) => ({
-    roundPlayers: many(roundPlayers),
-    roundNonregisteredPlayers: many(roundNonregisteredPlayers),
     course: one(courses, {
         fields: [rounds.courseId],
         references: [courses.id]
     })
 }))
-
-export const roundPlayers = pgTable("round_players", {
-    roundId: integer("round_id").notNull().references(() => rounds.id),
-    userId: integer("user_id").references(() => users.id),
-    score: integer("score").default(0)
-}, (t) => ({ pk: primaryKey({ columns: [t.roundId, t.userId] }) }))
-
-export const roundNonregisteredPlayers = pgTable("round_nonregisteredplayers", {
-    roundId: integer("round_id").notNull().references(() => rounds.id),
-    nonregisteredPlayerId: integer("nonregistered_player_id").references(() => nonregisteredPlayers.id),
-    score: integer("score").default(0)
-}, (t) => ({ pk: primaryKey({ columns: [t.roundId, t.nonregisteredPlayerId] }) }))
-
-export const roundPlayersRelations = relations(roundPlayers, ({ one }) => ({
-    round: one(rounds, {
-        fields: [roundPlayers.roundId],
-        references: [rounds.id]
-    }),
-    user: one(users, {
-        fields: [roundPlayers.userId],
-        references: [users.id]
-    }),
-}))
-
-export const roundNonregisteredUsersRelations = relations(roundNonregisteredPlayers, ({ one }) => ({
-    round: one(rounds, {
-        fields: [roundNonregisteredPlayers.roundId],
-        references: [rounds.id]
-    }),
-    nonregisteredPlayer: one(nonregisteredPlayers, {
-        fields: [roundNonregisteredPlayers.nonregisteredPlayerId],
-        references: [nonregisteredPlayers.id]
-    }),
-}))
-
 
 export const sessions = pgTable("sessions", {
     id: serial("id").primaryKey(),

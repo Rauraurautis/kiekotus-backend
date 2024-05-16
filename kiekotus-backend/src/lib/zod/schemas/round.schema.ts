@@ -1,19 +1,18 @@
-import { array, number, object, string, z } from "zod"
+import { array, number, object, string, z, union } from "zod"
 
-
-
-const roundPlayerSchema = object({
-    player: object({
-        id: number({ required_error: "Enter id of user or nonregisteredplayer" }),
-        type: string({required_error: "Enter player type (nonregisteredPlayer || user)"})
-        .refine(val => val === "nonregisteredPlayer" || val === "user")
-    }),
-    score: number({ required_error: "Enter score" })
+const playerSchema = object({
+    name: string(),
+    id: union([z.string(), z.number()])
 })
 
+const roundPlayerSchema = object({
+    player: playerSchema,
+    scores: array(number())
+})
 
 export const createRoundSchema = object({
     courseId: number({ required_error: "Enter course id" }),
+    courseName: string({ required_error: "Course name required" }),
     roundPlayers: array(roundPlayerSchema)
 })
 

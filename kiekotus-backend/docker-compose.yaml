@@ -1,0 +1,39 @@
+version: "3"
+services:
+
+  kiekotus-backend:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 5000:1337
+    environment:
+      DRIZZLE_DATABASE_URL: postgresql://postgres:y2e6i5@pgdb:5432/kiekotusdbdevelopment
+      PORT: 1337
+      NODE_ENV: development
+    depends_on:
+      pgdb:
+        condition: service_healthy
+
+  pgdb:
+    container_name: pgdb
+    image: rauraurautis/dgpostgres:01
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: y2e6i5
+      POSTGRES_DB: kiekotusdbdevelopment
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "kiekotusdbdevelopment", "-U", "postgres"]
+      interval: 5s
+      retries: 5
+      timeout: 2s
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    external: true
+    

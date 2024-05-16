@@ -15,6 +15,7 @@ export const getSingleCourseHandler = async (req: Request, res: Response, next: 
 
 export const getAllCoursesHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log(req)
         const courses = await getAllCourses()
         return res.status(200).send(courses)
     } catch (error) {

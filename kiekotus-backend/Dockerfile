@@ -12,7 +12,6 @@ ENV PORT=1337
 
 ENV NODE_ENV=development
 
-RUN ["npm", "run", "migration:generate"]
 
 EXPOSE 1337
 

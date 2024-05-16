@@ -1,14 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { get } from "lodash"
-
-
 import { reIssueAccessToken, verifyJwt } from "../lib/utils/jwt.utils";
-import { TokenPayload } from "../lib/types";
 import { JwtPayload } from "jsonwebtoken";
 
 export const deserializeUser = async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = get(req, "headers.authorization")?.slice(7)
     const refreshToken = req.cookies["refreshToken"]
+
 
     if (!accessToken) {
 
@@ -21,7 +19,7 @@ export const deserializeUser = async (req: Request, res: Response, next: NextFun
         return next()
     }
 
-    if (expired && refreshToken) {
+    if ( refreshToken) {
         const newAccessToken = await reIssueAccessToken(refreshToken)
         if (newAccessToken) {
             res.setHeader("x-access-token", newAccessToken)

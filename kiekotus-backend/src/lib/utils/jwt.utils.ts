@@ -8,12 +8,12 @@ const privateKey = process.env.PRIVATE_KEY || ""
 const publicKey = process.env.PUBLIC_KEY || ""
 
 export const signJWT = (object: Object, options?: jwt.SignOptions | undefined) => {
-    return jwt.sign(object, privateKey, { ...(options && options), algorithm: "RS256" })
+    return jwt.sign(object, process.env.SECRET || "")
 }
 
 export const verifyJwt = (token: string) => {
     try {
-        const decoded = jwt.verify(token, publicKey)
+        const decoded = jwt.verify(token, process.env.SECRET || "")
         return {
             valid: true,
             expired: false,
@@ -31,6 +31,7 @@ export const verifyJwt = (token: string) => {
 
 export const reIssueAccessToken = async (refreshToken: string) => {
     const { decoded } = verifyJwt(refreshToken) as JwtPayload
+
     const userId = get(decoded?.user, "id")
 
     if (!decoded || !userId) {

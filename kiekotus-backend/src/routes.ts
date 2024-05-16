@@ -28,10 +28,6 @@ const routes = (app: Express) => {
         return res.json({ status: "OK" })
     })
 
-    app.get("/csrf-token", (req: Request, res: Response) => {
-        return res.json({ csrfToken: req.csrfToken() })
-    })
-
     app.get("/refresh", handleTokenRefresh)
 
 
